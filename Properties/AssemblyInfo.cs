@@ -5,14 +5,14 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("LibNoise.Unity")]
-[assembly: AssemblyProduct("LibNoise.Unity")]
+[assembly: AssemblyTitle("LibSolowej.Unity")]
+[assembly: AssemblyProduct("LibSolowej.Unity")]
 [assembly:
-    AssemblyDescription("C# Unity Port of LibNoise, Ported from BigBlackBlock Gamestudio port of LibNoise to XNA")]
+    AssemblyDescription("C# Unity Port of LibSolowej, Ported from BigBlackBlock Gamestudio port of LibSolowej to XNA")]
 [assembly: AssemblyCompany("None")]
 [assembly:
     AssemblyCopyright(
-        "LibUnity.Xna Copyright © Jason Bevins 2003-2007, 2010 BigBlackBlock Gamestudio, LibNoise.Unity Copyright © 2010 Unity Commons, distributed under the terms on the Lesser GPL"
+        "LibUnity.Xna Copyright © Jason Bevins 2003-2007, 2010 BigBlackBlock Gamestudio, LibSolowej.Unity Copyright © 2010 Unity Commons, distributed under the terms on the Lesser GPL"
         )]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

@@ -1,11 +1,12 @@
 ﻿using System;
 using UnityEngine;
 
-namespace LibNoise.Generator
+namespace LibSolowej.Generator
 {
     /// <summary>
     /// Provides a noise module that outputs 3-dimensional ridged-multifractal noise. [GENERATOR]
     /// </summary>
+	[ModuleMapping(ModuleTypes.Generator, "ridged")]
     public class RidgedMultifractal : ModuleBase
     {
         #region Fields
@@ -15,8 +16,7 @@ namespace LibNoise.Generator
         private QualityMode _quality = QualityMode.Medium;
         private int _octaveCount = 6;
         private int _seed;
-        private readonly double[] _weights = new double[Utils.OctavesMaximum];
-
+        
         #endregion
 
         #region Constructors
@@ -27,7 +27,7 @@ namespace LibNoise.Generator
         public RidgedMultifractal()
             : base(0)
         {
-            UpdateWeights();
+            
         }
 
         /// <summary>
@@ -52,6 +52,18 @@ namespace LibNoise.Generator
 
         #region Properties
 
+		protected override object SolowejModuleSettings {
+			get {
+				return new {
+					frequency = Frequency,
+					lacunarity = Lacunarity,
+					octaves = OctaveCount,
+					seed = Seed,
+					quality = (int) Quality
+				};
+			}
+		}
+
         /// <summary>
         /// Gets or sets the frequency of the first octave.
         /// </summary>
@@ -70,7 +82,6 @@ namespace LibNoise.Generator
             set
             {
                 _lacunarity = value;
-                UpdateWeights();
             }
         }
 
@@ -99,64 +110,6 @@ namespace LibNoise.Generator
         {
             get { return _seed; }
             set { _seed = value; }
-        }
-
-        #endregion
-
-        #region Methods
-
-        /// <summary>
-        /// Updates the weights of the ridged-multifractal noise.
-        /// </summary>
-        private void UpdateWeights()
-        {
-            var f = 1.0;
-            for (var i = 0; i < Utils.OctavesMaximum; i++)
-            {
-                _weights[i] = Math.Pow(f, -1.0);
-                f *= _lacunarity;
-            }
-        }
-
-        #endregion
-
-        #region ModuleBase Members
-
-        /// <summary>
-        /// Returns the output value for the given input coordinates.
-        /// </summary>
-        /// <param name="x">The input coordinate on the x-axis.</param>
-        /// <param name="y">The input coordinate on the y-axis.</param>
-        /// <param name="z">The input coordinate on the z-axis.</param>
-        /// <returns>The resulting output value.</returns>
-        public override double GetValue(double x, double y, double z)
-        {
-            x *= _frequency;
-            y *= _frequency;
-            z *= _frequency;
-            var value = 0.0;
-            var weight = 1.0;
-            var offset = 1.0; // TODO: Review why Offset is never assigned
-            var gain = 2.0;   // TODO: Review why gain is never assigned
-            for (var i = 0; i < _octaveCount; i++)
-            {
-                var nx = Utils.MakeInt32Range(x);
-                var ny = Utils.MakeInt32Range(y);
-                var nz = Utils.MakeInt32Range(z);
-                long seed = (_seed + i) & 0x7fffffff;
-                var signal = Utils.GradientCoherentNoise3D(nx, ny, nz, seed, _quality);
-                signal = Math.Abs(signal);
-                signal = offset - signal;
-                signal *= signal;
-                signal *= weight;
-                weight = signal * gain;
-                weight = Mathf.Clamp01((float) weight);
-                value += (signal * _weights[i]);
-                x *= _lacunarity;
-                y *= _lacunarity;
-                z *= _lacunarity;
-            }
-            return (value * 1.25) - 1.0;
         }
 
         #endregion

@@ -1,10 +1,11 @@
 ﻿using System;
 
-namespace LibNoise.Generator
+namespace LibSolowej.Generator
 {
     /// <summary>
     /// Provides a noise module that outputs concentric cylinders. [GENERATOR]
     /// </summary>
+	[ModuleMapping(ModuleTypes.Generator, "cylinders")]
     public class Cylinders : ModuleBase
     {
         #region Fields
@@ -37,6 +38,14 @@ namespace LibNoise.Generator
 
         #region Properties
 
+		protected override object SolowejModuleSettings {
+			get {
+				return new {
+					frequency = Frequency
+				};
+			}
+		}
+
         /// <summary>
         /// Gets or sets the frequency of the concentric cylinders.
         /// </summary>
@@ -44,28 +53,6 @@ namespace LibNoise.Generator
         {
             get { return _frequency; }
             set { _frequency = value; }
-        }
-
-        #endregion
-
-        #region ModuleBase Members
-
-        /// <summary>
-        /// Returns the output value for the given input coordinates.
-        /// </summary>
-        /// <param name="x">The input coordinate on the x-axis.</param>
-        /// <param name="y">The input coordinate on the y-axis.</param>
-        /// <param name="z">The input coordinate on the z-axis.</param>
-        /// <returns>The resulting output value.</returns>
-        public override double GetValue(double x, double y, double z)
-        {
-            x *= _frequency;
-            z *= _frequency;
-            var dfc = Math.Sqrt(x * x + z * z);
-            var dfss = dfc - Math.Floor(dfc);
-            var dfls = 1.0 - dfss;
-            var nd = Math.Min(dfss, dfls);
-            return 1.0 - (nd * 4.0);
         }
 
         #endregion

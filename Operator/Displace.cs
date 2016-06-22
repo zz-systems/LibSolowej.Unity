@@ -1,12 +1,13 @@
 ﻿using System.Diagnostics;
 
-namespace LibNoise.Operator
+namespace LibSolowej.Operator
 {
     /// <summary>
     /// Provides a noise module that uses three source modules to displace each
     /// coordinate of the input value before returning the output value from
     /// a source module. [OPERATOR]
     /// </summary>
+	[ModuleMapping(ModuleTypes.Modifier, "displace")]
     public class Displace : ModuleBase
     {
         #region Constructors
@@ -76,29 +77,6 @@ namespace LibNoise.Operator
                 Debug.Assert(value != null);
                 Modules[3] = value;
             }
-        }
-
-        #endregion
-
-        #region ModuleBase Members
-
-        /// <summary>
-        /// Returns the output value for the given input coordinates.
-        /// </summary>
-        /// <param name="x">The input coordinate on the x-axis.</param>
-        /// <param name="y">The input coordinate on the y-axis.</param>
-        /// <param name="z">The input coordinate on the z-axis.</param>
-        /// <returns>The resulting output value.</returns>
-        public override double GetValue(double x, double y, double z)
-        {
-            Debug.Assert(Modules[0] != null);
-            Debug.Assert(Modules[1] != null);
-            Debug.Assert(Modules[2] != null);
-            Debug.Assert(Modules[3] != null);
-            var dx = x + Modules[1].GetValue(x, y, z);
-            var dy = y + Modules[2].GetValue(x, y, z);
-            var dz = z + Modules[3].GetValue(x, y, z);
-            return Modules[0].GetValue(dx, dy, dz);
         }
 
         #endregion

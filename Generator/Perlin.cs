@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 
-namespace LibNoise.Generator
+namespace LibSolowej.Generator
 {
     /// <summary>
     /// Provides a noise module that outputs a three-dimensional perlin noise. [GENERATOR]
     /// </summary>
+	[ModuleMapping(ModuleTypes.Generator, "perlin")]
     public class Perlin : ModuleBase
     {
         #region Fields
@@ -52,6 +53,19 @@ namespace LibNoise.Generator
         #endregion
 
         #region Properties
+
+		protected override object SolowejModuleSettings {
+			get {
+				return new {
+					frequency = Frequency,
+					lacunarity = Lacunarity,
+					octaves = OctaveCount,
+					persistence = Persistence,
+					seed = Seed,
+					quality = (int) Quality
+				};
+			}
+		}
 
         /// <summary>
         /// Gets or sets the frequency of the first octave.
@@ -105,40 +119,6 @@ namespace LibNoise.Generator
         {
             get { return _seed; }
             set { _seed = value; }
-        }
-
-        #endregion
-
-        #region ModuleBase Members
-
-        /// <summary>
-        /// Returns the output value for the given input coordinates.
-        /// </summary>
-        /// <param name="x">The input coordinate on the x-axis.</param>
-        /// <param name="y">The input coordinate on the y-axis.</param>
-        /// <param name="z">The input coordinate on the z-axis.</param>
-        /// <returns>The resulting output value.</returns>
-        public override double GetValue(double x, double y, double z)
-        {
-            var value = 0.0;
-            var cp = 1.0;
-            x *= _frequency;
-            y *= _frequency;
-            z *= _frequency;
-            for (var i = 0; i < _octaveCount; i++)
-            {
-                var nx = Utils.MakeInt32Range(x);
-                var ny = Utils.MakeInt32Range(y);
-                var nz = Utils.MakeInt32Range(z);
-                var seed = (_seed + i) & 0xffffffff;
-                var signal = Utils.GradientCoherentNoise3D(nx, ny, nz, seed, _quality);
-                value += signal * cp;
-                x *= _lacunarity;
-                y *= _lacunarity;
-                z *= _lacunarity;
-                cp *= _persistence;
-            }
-            return value;
         }
 
         #endregion

@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace LibNoise.Operator
+namespace LibSolowej.Operator
 {
     /// <summary>
     /// Provides a noise module that maps the output value from a source module onto an
     /// exponential curve. [OPERATOR]
     /// </summary>
+	[ModuleMapping(ModuleTypes.Modifier, "exp")]
     public class Exponent : ModuleBase
     {
         #region Fields
@@ -51,6 +52,13 @@ namespace LibNoise.Operator
 
         #region Properties
 
+		protected override object SolowejModuleSettings {
+			get {
+				return new { value = Value };
+			}
+		}
+
+
         /// <summary>
         /// Gets or sets the exponent.
         /// </summary>
@@ -59,25 +67,6 @@ namespace LibNoise.Operator
             get { return _exponent; }
             set { _exponent = value; }
         }
-
-        #endregion
-
-        #region ModuleBase Members
-
-        /// <summary>
-        /// Returns the output value for the given input coordinates.
-        /// </summary>
-        /// <param name="x">The input coordinate on the x-axis.</param>
-        /// <param name="y">The input coordinate on the y-axis.</param>
-        /// <param name="z">The input coordinate on the z-axis.</param>
-        /// <returns>The resulting output value.</returns>
-        public override double GetValue(double x, double y, double z)
-        {
-            Debug.Assert(Modules[0] != null);
-            var v = Modules[0].GetValue(x, y, z);
-            return (Math.Pow(Math.Abs((v + 1.0) / 2.0), _exponent) * 2.0 - 1.0);
-        }
-
         #endregion
     }
 }

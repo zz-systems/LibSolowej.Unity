@@ -1,11 +1,12 @@
 ﻿using System.Diagnostics;
 
-namespace LibNoise.Operator
+namespace LibSolowej.Operator
 {
     /// <summary>
     /// Provides a noise module that moves the coordinates of the input value before
     /// returning the output value from a source module. [OPERATOR]
     /// </summary>
+	[ModuleMapping(ModuleTypes.Modifier, "translate_input")]
     public class Translate : ModuleBase
     {
         #region Fields
@@ -54,7 +55,13 @@ namespace LibNoise.Operator
 
         #endregion
 
-        #region Properties
+		#region Properties
+
+		protected override object SolowejModuleSettings {
+			get {
+				return new { offset = new[] { X, Y, Z } };
+			}
+		}
 
         /// <summary>
         /// Gets or sets the translation on the x-axis.
@@ -83,23 +90,6 @@ namespace LibNoise.Operator
             set { _z = value; }
         }
 
-        #endregion
-
-        #region ModuleBase Members
-
-        /// <summary>
-        /// Returns the output value for the given input coordinates.
-        /// </summary>
-        /// <param name="x">The input coordinate on the x-axis.</param>
-        /// <param name="y">The input coordinate on the y-axis.</param>
-        /// <param name="z">The input coordinate on the z-axis.</param>
-        /// <returns>The resulting output value.</returns>
-        public override double GetValue(double x, double y, double z)
-        {
-            Debug.Assert(Modules[0] != null);
-            return Modules[0].GetValue(x + _x, y + _y, z + _z);
-        }
-
-        #endregion
+        #endregion        
     }
 }

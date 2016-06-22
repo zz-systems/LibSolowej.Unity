@@ -2,8 +2,9 @@
 using System.Xml.Serialization;
 using UnityEngine;
 using Debug = System.Diagnostics.Debug;
+using System.Linq;
 
-namespace LibNoise
+namespace LibSolowej
 {
 
     #region Enumerations
@@ -31,6 +32,8 @@ namespace LibNoise
 
         #endregion
 
+
+
         #region Constructors
 
         /// <summary>
@@ -39,10 +42,12 @@ namespace LibNoise
         /// <param name="count">The number of source modules.</param>
         protected ModuleBase(int count)
         {
-            if (count > 0)
+            //if (count > 0)
             {
                 _modules = new ModuleBase[count];
             }
+
+			Name = Guid.NewGuid ().ToString ();
         }
 
         #endregion
@@ -88,10 +93,12 @@ namespace LibNoise
         #endregion
 
         #region Properties
-        protected ModuleBase[] Modules
+        public ModuleBase[] Modules
         {
             get { return _modules; }
         }
+
+		public string Name { get; set; }
 
         /// <summary>
         /// Gets the number of source modules required by this noise module.
@@ -101,9 +108,54 @@ namespace LibNoise
             get { return (_modules == null) ? 0 : _modules.Length; }
         }
 
+
+		protected virtual string SolowejModuleType 
+		{ 
+			get 
+			{ 
+				var type = this.GetType ().GetAttributeValue ((ModuleMappingAttribute attrib) => attrib.ModuleType);
+
+				switch (type) {
+				case ModuleTypes.Generator:
+					return "generator";
+				case ModuleTypes.Modifier:
+					return "modifier";
+				default:
+					return "";
+				}
+			} 
+		}
+
+		protected virtual string SolowejModuleMapping 
+		{ 
+			get 
+			{
+				return this.GetType ().GetAttributeValue ((ModuleMappingAttribute attrib) => attrib.ModuleName);
+			}
+		}
+
+
+		public virtual object SolowejConfig {
+			get 
+			{
+				
+
+				return new {
+					name 		= Name,
+					type 		= SolowejModuleType,
+					module 		= SolowejModuleMapping,
+					source 		= Modules.Select (module => module.Name).ToArray (),
+					settings 	= SolowejModuleSettings
+				};
+			}
+		}
+
+		protected virtual object SolowejModuleSettings	{ get { return new {}; } }
+
         #endregion
 
         #region Methods
+
 
         /// <summary>
         /// Returns the output value for the given input coordinates.
@@ -112,7 +164,10 @@ namespace LibNoise
         /// <param name="y">The input coordinate on the y-axis.</param>
         /// <param name="z">The input coordinate on the z-axis.</param>
         /// <returns>The resulting output value.</returns>
-        public abstract double GetValue(double x, double y, double z);
+        public virtual double GetValue(double x, double y, double z)
+		{
+			throw new NotImplementedException ("Please use the scheduler!");
+		}
 
         /// <summary>
         /// Returns the output value for the given input coordinates.

@@ -1,11 +1,12 @@
 ﻿using System.Diagnostics;
 
-namespace LibNoise.Operator
+namespace LibSolowej.Operator
 {
     /// <summary>
     /// Provides a noise module that outputs the value selected from one of two source
     /// modules chosen by the output value from a control module. [OPERATOR]
     /// </summary>
+	[ModuleMapping(ModuleTypes.Modifier, "select")]
     public class Select : ModuleBase
     {
         #region Fields
@@ -59,8 +60,17 @@ namespace LibNoise.Operator
 
         #endregion
 
-        #region Properties
+		#region Properties
 
+		protected override object SolowejModuleSettings {
+			get {
+				return new {
+					edgeFalloff = FallOff,
+					lowerBound = Minimum,
+					upperBound = Maximum
+				};
+			}
+		}
         /// <summary>
         /// Gets or sets the controlling module.
         /// </summary>
@@ -78,7 +88,7 @@ namespace LibNoise.Operator
         /// Gets or sets the falloff value at the edge transition.
         /// </summary>
 		/// <remarks>
-		/// Called SetEdgeFallOff() on the original LibNoise.
+		/// Called SetEdgeFallOff() on the original LibSolowej.
 		/// </remarks>
         public double FallOff
         {
@@ -134,59 +144,6 @@ namespace LibNoise.Operator
             FallOff = _fallOff;
         }
 
-        #endregion
-
-        #region ModuleBase Members
-
-        /// <summary>
-        /// Returns the output value for the given input coordinates.
-        /// </summary>
-        /// <param name="x">The input coordinate on the x-axis.</param>
-        /// <param name="y">The input coordinate on the y-axis.</param>
-        /// <param name="z">The input coordinate on the z-axis.</param>
-        /// <returns>The resulting output value.</returns>
-        public override double GetValue(double x, double y, double z)
-        {
-            Debug.Assert(Modules[0] != null);
-            Debug.Assert(Modules[1] != null);
-            Debug.Assert(Modules[2] != null);
-            var cv = Modules[2].GetValue(x, y, z);
-            if (_fallOff > 0.0)
-            {
-                double a;
-                if (cv < (_min - _fallOff))
-                {
-                    return Modules[0].GetValue(x, y, z);
-                }
-                if (cv < (_min + _fallOff))
-                {
-                    var lc = (_min - _fallOff);
-                    var uc = (_min + _fallOff);
-                    a = Utils.MapCubicSCurve((cv - lc) / (uc - lc));
-                    return Utils.InterpolateLinear(Modules[0].GetValue(x, y, z),
-                        Modules[1].GetValue(x, y, z), a);
-                }
-                if (cv < (_max - _fallOff))
-                {
-                    return Modules[1].GetValue(x, y, z);
-                }
-                if (cv < (_max + _fallOff))
-                {
-                    var lc = (_max - _fallOff);
-                    var uc = (_max + _fallOff);
-                    a = Utils.MapCubicSCurve((cv - lc) / (uc - lc));
-                    return Utils.InterpolateLinear(Modules[1].GetValue(x, y, z),
-                        Modules[0].GetValue(x, y, z), a);
-                }
-                return Modules[0].GetValue(x, y, z);
-            }
-            if (cv < _min || cv > _max)
-            {
-                return Modules[0].GetValue(x, y, z);
-            }
-            return Modules[1].GetValue(x, y, z);
-        }
-
-        #endregion
+        #endregion        
     }
 }

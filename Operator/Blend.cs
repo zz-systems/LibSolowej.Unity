@@ -1,11 +1,12 @@
 ﻿using System.Diagnostics;
 
-namespace LibNoise.Operator
+namespace LibSolowej.Operator
 {
     /// <summary>
     /// Provides a noise module that outputs a weighted blend of the output values from
     /// two source modules given the output value supplied by a control module. [OPERATOR]
     /// </summary>
+	[ModuleMapping(ModuleTypes.Modifier, "blend")]
     public class Blend : ModuleBase
     {
         #region Constructors
@@ -47,28 +48,6 @@ namespace LibNoise.Operator
                 Debug.Assert(value != null);
                 Modules[2] = value;
             }
-        }
-
-        #endregion
-
-        #region ModuleBase Members
-
-        /// <summary>
-        /// Returns the output value for the given input coordinates.
-        /// </summary>
-        /// <param name="x">The input coordinate on the x-axis.</param>
-        /// <param name="y">The input coordinate on the y-axis.</param>
-        /// <param name="z">The input coordinate on the z-axis.</param>
-        /// <returns>The resulting output value.</returns>
-        public override double GetValue(double x, double y, double z)
-        {
-            Debug.Assert(Modules[0] != null);
-            Debug.Assert(Modules[1] != null);
-            Debug.Assert(Modules[2] != null);
-            var a = Modules[0].GetValue(x, y, z);
-            var b = Modules[1].GetValue(x, y, z);
-            var c = (Modules[2].GetValue(x, y, z) + 1.0) / 2.0;
-            return Utils.InterpolateLinear(a, b, c);
         }
 
         #endregion

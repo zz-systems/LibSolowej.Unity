@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Debug = System.Diagnostics.Debug;
+using System.Linq;
 
-namespace LibNoise.Operator
+namespace LibSolowej.Operator
 {
     /// <summary>
     /// Provides a noise module that maps the output value from a source module onto a
     /// terrace-forming curve. [OPERATOR]
     /// </summary>
+	[ModuleMapping(ModuleTypes.Modifier, "terrace")]
     public class Terrace : ModuleBase
     {
         #region Fields
@@ -52,7 +54,15 @@ namespace LibNoise.Operator
 
         #endregion
 
-        #region Properties
+		#region Properties
+
+		protected override object SolowejModuleSettings {
+			get {
+				return new {
+					points = ControlPoints.ToArray ()
+				};
+			}
+		}
 
         /// <summary>
         /// Gets the number of control points.
@@ -124,50 +134,6 @@ namespace LibNoise.Operator
             }
         }
 
-        #endregion
-
-        #region ModuleBase Members
-
-        /// <summary>
-        /// Returns the output value for the given input coordinates.
-        /// </summary>
-        /// <param name="x">The input coordinate on the x-axis.</param>
-        /// <param name="y">The input coordinate on the y-axis.</param>
-        /// <param name="z">The input coordinate on the z-axis.</param>
-        /// <returns>The resulting output value.</returns>
-        public override double GetValue(double x, double y, double z)
-        {
-            Debug.Assert(Modules[0] != null);
-            Debug.Assert(ControlPointCount >= 2);
-            var smv = Modules[0].GetValue(x, y, z);
-            int ip;
-            for (ip = 0; ip < _data.Count; ip++)
-            {
-                if (smv < _data[ip])
-                {
-                    break;
-                }
-            }
-            var i0 = Mathf.Clamp(ip - 1, 0, _data.Count - 1);
-            var i1 = Mathf.Clamp(ip, 0, _data.Count - 1);
-            if (i0 == i1)
-            {
-                return _data[i1];
-            }
-            var v0 = _data[i0];
-            var v1 = _data[i1];
-            var a = (smv - v0) / (v1 - v0);
-            if (_inverted)
-            {
-                a = 1.0 - a;
-                var t = v0;
-                v0 = v1;
-                v1 = t;
-            }
-            a *= a;
-            return Utils.InterpolateLinear(v0, v1, a);
-        }
-
-        #endregion
+        #endregion       
     }
 }

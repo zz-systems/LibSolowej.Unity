@@ -1,10 +1,11 @@
 ﻿using System;
 
-namespace LibNoise.Generator
+namespace LibSolowej.Generator
 {
     /// <summary>
     /// Provides a noise module that outputs Voronoi cells. [GENERATOR]
     /// </summary>
+	[ModuleMapping(ModuleTypes.Generator, "voronoi")]
     public class Voronoi : ModuleBase
     {
         #region Fields
@@ -47,6 +48,17 @@ namespace LibNoise.Generator
 
         #region Properties
 
+		protected override object SolowejModuleSettings {
+			get {
+				return new {
+					frequency = Frequency,
+					displacement = Displacement,
+					seed = Seed,
+					enableDistance = UseDistance
+				};
+			}
+		}
+
         /// <summary>
         /// Gets or sets the displacement value of the Voronoi cells.
         /// </summary>
@@ -81,68 +93,6 @@ namespace LibNoise.Generator
         {
             get { return _distance; }
             set { _distance = value; }
-        }
-
-        #endregion
-
-        #region ModuleBase Members
-
-        /// <summary>
-        /// Returns the output value for the given input coordinates.
-        /// </summary>
-        /// <param name="x">The input coordinate on the x-axis.</param>
-        /// <param name="y">The input coordinate on the y-axis.</param>
-        /// <param name="z">The input coordinate on the z-axis.</param>
-        /// <returns>The resulting output value.</returns>
-        public override double GetValue(double x, double y, double z)
-        {
-            x *= _frequency;
-            y *= _frequency;
-            z *= _frequency;
-            var xi = (x > 0.0 ? (int) x : (int) x - 1);
-            var iy = (y > 0.0 ? (int) y : (int) y - 1);
-            var iz = (z > 0.0 ? (int) z : (int) z - 1);
-            var md = 2147483647.0;
-            double xc = 0;
-            double yc = 0;
-            double zc = 0;
-            for (var zcu = iz - 2; zcu <= iz + 2; zcu++)
-            {
-                for (var ycu = iy - 2; ycu <= iy + 2; ycu++)
-                {
-                    for (var xcu = xi - 2; xcu <= xi + 2; xcu++)
-                    {
-                        var xp = xcu + Utils.ValueNoise3D(xcu, ycu, zcu, _seed);
-                        var yp = ycu + Utils.ValueNoise3D(xcu, ycu, zcu, _seed + 1);
-                        var zp = zcu + Utils.ValueNoise3D(xcu, ycu, zcu, _seed + 2);
-                        var xd = xp - x;
-                        var yd = yp - y;
-                        var zd = zp - z;
-                        var d = xd * xd + yd * yd + zd * zd;
-                        if (d < md)
-                        {
-                            md = d;
-                            xc = xp;
-                            yc = yp;
-                            zc = zp;
-                        }
-                    }
-                }
-            }
-            double v;
-            if (_distance)
-            {
-                var xd = xc - x;
-                var yd = yc - y;
-                var zd = zc - z;
-                v = (Math.Sqrt(xd * xd + yd * yd + zd * zd)) * Utils.Sqrt3 - 1.0;
-            }
-            else
-            {
-                v = 0.0;
-            }
-            return v + (_displacement * Utils.ValueNoise3D((int) (Math.Floor(xc)), (int) (Math.Floor(yc)),
-                (int) (Math.Floor(zc)), 0));
         }
 
         #endregion
