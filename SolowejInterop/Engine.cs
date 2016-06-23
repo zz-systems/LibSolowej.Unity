@@ -9,13 +9,14 @@ namespace LibSolowej
 {
 	public class SolowejEngine : MonoBehaviour
 	{
-		private IntPtr libptr;
+		private static IntPtr libptr;
 
 		private delegate string solowej_get_error();
 		private delegate int solowej_compile_immediate(string instance_key, string content);
 		private delegate int solowej_run(string instance_key, [In, Out] IntPtr target, float origin_x, float origin_y, float origin_z);
+        private delegate int solowej_run_cvti(string instance_key, [In, Out] IntPtr target, float origin_x, float origin_y, float origin_z);
 
-		public enum Capabilities
+        public enum Capabilities
 		{
 			NO_LIMITS = -1,
 			AVX512 	= 1 << 9,
@@ -29,7 +30,8 @@ namespace LibSolowej
 			FPU 	= 0
 		}
 
-		public Capabilities MaxCapability 	{ get; set; }
+        public string Identifier { get; set; }
+        public Capabilities MaxCapability 	{ get; set; }
 		public Vector3 Dimensions 			{ get; set; }
 		public Vector3 Scale 				{ get; set; }
 		public Vector3 Offset 				{ get; set; }
@@ -87,7 +89,7 @@ namespace LibSolowej
 			var config_str = JsonConvert.SerializeObject (config);
 			Debug.Log ( config_str );
 
-			if (0 != Native.Instance.Invoke<int, solowej_compile_immediate> (libptr, "test_infinity_map", config_str)) {
+			if (0 != Native.Instance.Invoke<int, solowej_compile_immediate> (libptr, Identifier, config_str)) {
 				//throw new InvalidOperationException (Native.Instance.Invoke<solowej_get_error> ());
 				Debug.LogError(Native.Instance.Invoke<string, solowej_get_error> (libptr));
 			}
@@ -102,7 +104,7 @@ namespace LibSolowej
 			{
 				IntPtr pointer = handle.AddrOfPinnedObject();
 
-				if(0 != Native.Instance.Invoke<int, solowej_run>(libptr, "test_infinity_map", pointer, at.x, at.y, at.z))
+				if(0 != Native.Instance.Invoke<int, solowej_run>(libptr, Identifier, pointer, at.x, at.y, at.z))
 				{
 					//throw new InvalidOperationException (Native.Instance.Invoke<solowej_get_error> ());
 					Debug.LogError(Native.Instance.Invoke<string, solowej_get_error> (libptr));
@@ -118,6 +120,32 @@ namespace LibSolowej
 				}
 			}
 		}
-	}
+
+        public int[,] ExecuteI(Vector3 at)
+        {
+            int[,] result = new int[(int)Dimensions.x, (int)Dimensions.z];
+
+            GCHandle handle = GCHandle.Alloc(result, GCHandleType.Pinned);
+            try
+            {
+                IntPtr pointer = handle.AddrOfPinnedObject();
+
+                if (0 != Native.Instance.Invoke<int, solowej_run_cvti>(libptr, Identifier, pointer, at.x, at.y, at.z))
+                {
+                    //throw new InvalidOperationException (Native.Instance.Invoke<solowej_get_error> ());
+                    Debug.LogError(Native.Instance.Invoke<string, solowej_get_error>(libptr));
+                }
+
+                return result;
+            }
+            finally
+            {
+                if (handle.IsAllocated)
+                {
+                    handle.Free();
+                }
+            }
+        }
+    }
 }
 
