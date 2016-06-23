@@ -44,9 +44,10 @@ namespace LibSolowej
 
 			Debug.Log (IntPtr.Size == 8 ? "64bit" : "32bit");
 
-			libptr = Native.Instance.Load ("/home/szuyev/Dev/TestInfinityMap/libsolowej.so");
+            //libptr = Native.Instance.Load ("/home/szuyev/Dev/TestInfinityMap/libsolowej.so");
+            libptr = Native.Instance.Load("solowej");
 
-			if (libptr == IntPtr.Zero)
+            if (libptr == IntPtr.Zero)
 			{
 				Debug.LogError("Failed to load native libsolowej\n" + Native.Instance.LastError);
 			}
