@@ -16,7 +16,9 @@ namespace LibSolowej
 					case RuntimePlatform.WindowsPlayer:
 						_instance = new WindowsNatives ();
 						break;
-					case RuntimePlatform.LinuxEditor:
+#if !UNITY_EDITOR_WIN && !UNITY_EDITOR_OSX
+                        case RuntimePlatform.LinuxEditor:
+#endif
 					case RuntimePlatform.LinuxPlayer:
 						_instance = new LinuxNatives ();
 						break;
