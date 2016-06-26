@@ -15,12 +15,15 @@ Jason Bevins
 
 [LibSolowej](https://github.com/zz-systems/solowej) is a config-driven, parallelized, vectorized, partially extended, partially incomplete (still in development!) port of LibNoise.
 
-Please keep in mind, that this release is a **Preview/Alpha Release** and feel free to report issues and bugs to the [Issue tracker on GitHub](https://github.com/zz-systems/gorynych/issues)
+Please keep in mind, that this release is a **Preview/Alpha Release** and feel free to report issues and bugs to the [Issue tracker on GitHub](https://github.com/zz-systems/LibSolowej.Unity/issues)
 
 You can find the original LibNoise.Unity [here](https://github.com/ricardojmendez/LibNoise.Unity).
 Most of the documentation and examples apply to LibSolowej.Unity as well. 
 
 ## Example usage
+
+### Preparation
+Drop the solowej.dll (windows) or libsolowej.so (linux) into the unity project **root**, beneath the Assets, Bin, Library, etc.. floders
 
 ### (Singleton) Instantiation
 ```C#
