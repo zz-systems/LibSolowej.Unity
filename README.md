@@ -1,8 +1,6 @@
-# LibNoise.Unity
+# LibSolowej.Unity
 
-The main repository for LibNoise.Unity is currently maintained by
-[Ricardo J. Méndez](https://github.com/ricardojmendez). Pull requests
-are welcome.
+.NET Unity Wrapper for libsolowej which is mostly API compatible with [LibNoise.Unity](https://github.com/ricardojmendez/LibNoise.Unity)
 
 ## License
 
@@ -13,13 +11,53 @@ COPYING.LESSER.txt for details.
 ## About
 
 [LibNoise](http://libnoise.sourceforge.net/) was originally created by
-Jason Bevins. The library was later ported to Xna by [Marc André Ueberall](http://www.big-black-block.com/#home), and moved to Unity by Tim Speltz. Speltz’s  original development forum thread contains a Unity package with
-an example scene, which can be found
-[here](http://forum.unity3d.com/threads/68764-LibNoise-Ported-to-Unity).  Please note that LibNoise.Unity is only a repository for the library code itself and
-contains no example files. 
+Jason Bevins
 
-[You can also see the converted tutorials examples on this repository](https://github.com/ricardojmendez/LibNoiseTutorials).
+[LibSolowej](https://github.com/zz-systems/solowej) is a config-driven, parallelized, vectorized, partially extended, partially incomplete (still in development!) port of LibNoise.
 
-Other contributors to LibNoise.Unity include
-[Teddy Bradford](https://github.com/teddybradford) who reworked much of the
-Noise2D class to improve tiling support for noise maps.
+Please keep in mind, that this release is a **Preview/Alpha Release** and feel free to report issues and bugs to the [Issue tracker on GitHub](https://github.com/zz-systems/gorynych/issues)
+
+You can find the original LibNoise.Unity [here](https://github.com/ricardojmendez/LibNoise.Unity).
+Most of the documentation and examples apply to LibSolowej.Unity as well. 
+
+## Example usage
+
+### (Singleton) Instantiation
+```C#
+private static LibSolowej.SolowejEngine _engineInstance;
+public static LibSolowej.SolowejEngine EngineInstance
+{
+	get
+	{
+		return _engineInstance ?? (_engineInstance = (new GameObject("SolowejEngine")).AddComponent<LibSolowej.SolowejEngine>());
+	}
+}
+```
+### Configuration & Compilation
+```C#
+EngineInstance.Identifier       = "terragen"; // <- Engine instances are distinguished by this name
+EngineInstance.Dimensions 		= new Vector3 (129, 1, 129); // <- standard settings you find in LibSolowej
+EngineInstance.Scale 			= new Vector3 (1, 1, 1);
+EngineInstance.Offset 			= new Vector3 (0, 0, 0);
+EngineInstance.MakeSeam 		= true;
+EngineInstance.Multithreaded 	= false;
+EngineInstance.MaxCapability	= LibSolowej.SolowejEngine.Capabilities.AVX2;
+
+// Build the computation tree
+EngineInstance.Root = 
+				new LibSolowej.Operator.Abs(
+					new LibSolowej.Operator.ScaleBias(-0.5, 0.2,
+					  new LibSolowej.Generator.Perlin ())	);
+					
+EngineInstance.Compile();
+```
+### Execution
+```C#
+
+// Returns a float array
+Heightmap = EngineInstance.Execute (new Vector3(Position.X, 0, Position.Z));
+
+// Returns an int array (internally the computation is with floats, but is rounded and casted to int afterwards)
+var details = DetailGenerator.ExecuteI(Random.onUnitSphere);
+terrainData.SetDetailLayer(0, 0, 0, details);
+```
