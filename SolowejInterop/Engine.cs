@@ -30,6 +30,8 @@ namespace LibSolowej
 			FPU 	= 0
 		}
 
+        public string LibraryPath { get; set; }
+
         public string Identifier { get; set; }
         public Capabilities MaxCapability 	{ get; set; }
 		public Vector3 Dimensions 			{ get; set; }
@@ -40,15 +42,22 @@ namespace LibSolowej
 
 		public ModuleBase Root { get; set; }
 
-		void Awake()
+        private bool _isInvalid;
+
+        public SolowejEngine()
+        {
+            // *NIX
+            //LibraryPath = "/home/szuyev/Dev/TestInfinityMap/libsolowej.so";
+
+            LibraryPath = "solowej";
+        }
+        void Awake()
 		{
 			if (libptr != IntPtr.Zero) return;
 
-			Debug.Log (IntPtr.Size == 8 ? "64bit" : "32bit");
+			Debug.Log (IntPtr.Size == 8 ? "64bit" : "32bit");            
 
-            //libptr = Native.Instance.Load ("/home/szuyev/Dev/TestInfinityMap/libsolowej.so");
-            libptr = Native.Instance.Load("solowej");
-
+            libptr = Native.Instance.Load(LibraryPath);
             if (libptr == IntPtr.Zero)
 			{
 				Debug.LogError("Failed to load native libsolowej\n" + Native.Instance.LastError);
@@ -65,7 +74,9 @@ namespace LibSolowej
 		}
 
 		public void Compile()
-		{			
+		{
+            _isInvalid = false;
+
 			var config = new {
 				version = "0.9",
 				id = Guid.NewGuid ().ToString (),
@@ -90,16 +101,27 @@ namespace LibSolowej
 			Debug.Log ( config_str );
 
 			if (0 != Native.Instance.Invoke<int, solowej_compile_immediate> (libptr, Identifier, config_str)) {
-				//throw new InvalidOperationException (Native.Instance.Invoke<solowej_get_error> ());
-				Debug.LogError(Native.Instance.Invoke<string, solowej_get_error> (libptr));
+
+                var err = Native.Instance.Invoke<string, solowej_get_error>(libptr);
+
+                Debug.LogError(err);
+                _isInvalid = true;
+
+                throw new InvalidOperationException (err); 
 			}
 		}
 
 		public float[,] Execute(Vector3 at)
-		{			
+		{	
 			float[,] result = new float[(int)Dimensions.x, (int)Dimensions.z];
 
-			GCHandle handle = GCHandle.Alloc(result, GCHandleType.Pinned);
+            if (_isInvalid)
+            {
+                Debug.LogWarning("Engine malconfigured. Returning empty data.");
+                return result;
+            }
+
+            GCHandle handle = GCHandle.Alloc(result, GCHandleType.Pinned);
 			try
 			{
 				IntPtr pointer = handle.AddrOfPinnedObject();
@@ -124,6 +146,12 @@ namespace LibSolowej
         public int[,] ExecuteI(Vector3 at)
         {
             int[,] result = new int[(int)Dimensions.x, (int)Dimensions.z];
+
+            if (_isInvalid)
+            {
+                Debug.LogWarning("Engine malconfigured. Returning empty data.");
+                return result;
+            }
 
             GCHandle handle = GCHandle.Alloc(result, GCHandleType.Pinned);
             try

@@ -1,18 +1,18 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
-// General Information about an assembly is controlled through the following 
+// General Information about an assembly is controlled through the following*
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
 [assembly: AssemblyTitle("LibSolowej.Unity")]
 [assembly: AssemblyProduct("LibSolowej.Unity")]
 [assembly:
-    AssemblyDescription("C# Unity Port of LibSolowej, Ported from BigBlackBlock Gamestudio port of LibSolowej to XNA")]
+    AssemblyDescription("C# Unity Wrapper for LibSolowej")]
 [assembly: AssemblyCompany("None")]
 [assembly:
     AssemblyCopyright(
-        "LibUnity.Xna Copyright © Jason Bevins 2003-2007, 2010 BigBlackBlock Gamestudio, LibSolowej.Unity Copyright © 2010 Unity Commons, distributed under the terms on the Lesser GPL"
+        "LibSolowej.Unity Copyright © Sergej Zuyev 2016, distributed under the terms on the Lesser GPL"
         )]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -25,7 +25,7 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 
-[assembly: Guid("aa606d44-f8c3-47aa-a2b5-9156119ff843")]
+[assembly: Guid("4AB66911-CD4C-4CBA-AD42-9CE71E5A7464")]
 
 // Version information for an assembly consists of the following four values:
 //
