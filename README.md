@@ -2,6 +2,8 @@
 
 .NET Unity Wrapper for libsolowej which is mostly API compatible with [LibNoise.Unity](https://github.com/ricardojmendez/LibNoise.Unity)
 
+It is as complete as the libsolowej native library. Thus, no sphere maps etc... at the moment
+
 ## License
 
 LibNoise.Unity is released under the
@@ -24,6 +26,18 @@ Most of the documentation and examples apply to LibSolowej.Unity as well.
 
 ### Preparation
 Drop the solowej.dll (windows) or libsolowej.so (linux) into the unity project **root**, beneath the Assets, Bin, Library, etc.. floders
+
+Adapt the LibraryPath in the Engine Constructor - I haven't found a way yet to load the libraries on different platforms (Linux search patchs do not include the current directory IIRC)
+
+```C#
+public SolowejEngine()
+{
+    // *NIX
+    //LibraryPath = "/home/szuyev/Dev/TestInfinityMap/libsolowej.so";
+    // windows
+    LibraryPath = "solowej";
+}
+```
 
 ### (Singleton) Instantiation
 ```C#
